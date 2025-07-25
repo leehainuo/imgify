@@ -1,0 +1,1 @@
+INSERT INTO imgify.user (id, userAccount, userPassword, userName, userAvatar, userProfile, userRole, editTime, createTime, updateTime, isDelete) VALUES (1948618380085551106, 'lihainuo', '295ac41e4116106d56a275a5ccfa2412', 'LeeHaiNuo', '/src/assets/author_avatar.jpg', '个人网站：lihainuo.com', 'admin', '2025-07-25 13:36:40', '2025-07-25 13:36:40', '2025-07-25 13:41:05', 0);
