@@ -1,6 +1,14 @@
+// @ts-ignore
+/* eslint-disable */
 // API 更新时间：
 // API 唯一标识：
-import * as user from './user'
+import * as wenjianmokuai from './wenjianmokuai'
+import * as jiankangmokuai from './jiankangmokuai'
+import * as tupianmokuai from './tupianmokuai'
+import * as yonghumokuai from './yonghumokuai'
 export default {
-  user,
+  wenjianmokuai,
+  jiankangmokuai,
+  tupianmokuai,
+  yonghumokuai,
 }

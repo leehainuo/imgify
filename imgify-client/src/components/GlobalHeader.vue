@@ -5,7 +5,7 @@ import { message, type MenuProps } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
 import { useLoginUserStore } from '@/stores/useLoginUserStore'
 import '@/assets/font/font.css'
-import { userLogoutUsingPost } from '@/api/user'
+import { userLogoutUsingPost } from '@/api/yonghumokuai'
 
 const loginUserStore = useLoginUserStore()
 
@@ -15,22 +15,31 @@ const originItems = [
     key: '/',
     icon: () => h(HomeOutlined),
     label: '主页',
-    title: '主页',
   },
   {
     key: '/admin/userManage',
     label: '用户管理',
-    title: '用户管理',
   },
   {
-    key: '/about',
-    label: '关于本人',
-    title: '关于本人',
+    key: "/admin/pictureManage",
+    label: '图片管理',
   },
   {
-    key: 'others',
-    label: h('a', { href: 'https://www.lihainuo.com', target: '_blank' }, '个人网站'),
-    title: '个人网站',
+    key: '/addPicture',
+    label: '创建图片',
+  },
+  {
+    key: '/others',
+    label: h(
+      'a',
+      {
+        href: 'https://www.lihainuo.com',
+        target: '_blank',
+        class: 'personal-website-link',
+      },
+      '个人网站',
+    ),
+    
   },
 ]
 
@@ -109,9 +118,7 @@ onMounted(() => {
           <div v-else-if="loginUserStore.loginUser.id">
             <a-dropdown>
               <ASpace>
-                <a-avatar
-                 :src="loginUserStore.loginUser.userAvatar"
-                >
+                <a-avatar :src="loginUserStore.loginUser.userAvatar">
                   <template #icon><UserOutlined /></template>
                 </a-avatar>
                 {{ loginUserStore.loginUser.userName ?? '请输入昵称' }}
@@ -156,6 +163,65 @@ onMounted(() => {
 }
 
 .logo {
-  height: 48px;
+  height: 40px;
+}
+
+.personal-website-link {
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  display: inline-block;
+  font-weight: 500; 
+  text-shadow: 0 0 2px rgba(24, 144, 255, 0.15); /* 默认微弱蓝光 */
+}
+
+.personal-website-link:hover {
+  color: #1890ff !important;
+  transform: translateY(-1px);
+  text-shadow:
+    0 0 12px rgba(24, 144, 255, 0.45),
+    0 0 24px rgba(24, 144, 255, 0.25); /* 悬停更亮更广 */
+}
+
+.personal-website-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(90deg, #1890ff, #40a9ff);
+  transition: width 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  border-radius: 1px;
+}
+
+.personal-website-link:hover::after {
+  width: 100%;
+}
+
+/* 添加一个微妙的发光效果 */
+.personal-website-link:hover {
+  text-shadow: 0 0 8px rgba(24, 144, 255, 0.3);
+}
+
+/* 覆盖 Ant Design 菜单样式 */
+:deep(.ant-menu-item) .personal-website-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+:deep(.ant-menu-item:hover) .personal-website-link {
+  color: #1890ff !important;
+  transform: translateY(-1px);
+  text-shadow:
+    0 0 12px rgba(24, 144, 255, 0.45),
+    0 0 24px rgba(24, 144, 255, 0.25);
+}
+
+:deep(.ant-menu-item:hover) .personal-website-link::after {
+  width: 100%;
+}
+
+:deep(.ant-menu-item:hover) .personal-website-link {
+  text-shadow: 0 0 8px rgba(24, 144, 255, 0.3);
 }
 </style>

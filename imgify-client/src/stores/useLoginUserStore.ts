@@ -1,4 +1,4 @@
-import { getLoginUserUsingGet } from '@/api/user'
+import { getLoginUserUsingGet } from '@/api/yonghumokuai'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 

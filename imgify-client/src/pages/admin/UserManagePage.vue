@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { deleteUserUsingPost, listUserVoByPageUsingPost, updateUserUsingPost } from '@/api/user'
+import { deleteUserUsingPost, listUserVoByPageUsingPost, updateUserUsingPost } from '@/api/yonghumokuai'
 import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
 import { computed, onMounted, reactive, ref } from 'vue'
@@ -146,6 +146,9 @@ onMounted(() => {
 
 <template>
   <div id="userManagePage">
+    <a-flex style="margin-bottom: 1em;" justify="space-between">
+      <h2>用户管理</h2>
+    </a-flex>
     <!-- 搜索框 -->
     <a-form layout="inline" :model="searchParams" @finish="handleSearch">
       <a-form-item label="账号">
@@ -158,13 +161,14 @@ onMounted(() => {
         <a-button type="primary" html-type="submit">搜索</a-button>
       </a-form-item>
     </a-form>
-    <div style="margin-bottom: 16px" />
+    <div style="margin-bottom: 2em" />
     <!-- 表格 -->
     <a-table
       :columns="columns"
       :data-source="dataList"
       :pagination="pagination"
       @change="handleTableChange"
+      :scroll="{ x: 'max-content' }"
     >
       <template #bodyCell="{ column, record }">
         <template v-if="column.dataIndex === 'userAvatar'">
@@ -183,8 +187,8 @@ onMounted(() => {
         </template>
         <template v-else-if="column.key === 'action'">
           <div class="action">
-            <a-button type="primary" @click="openEditModal(record)">编辑</a-button>
-            <a-button danger @click="openDeleteModal(record.id)">删除</a-button>
+            <a-button type="link" @click="openEditModal(record)">编辑</a-button>
+            <a-button type="link" danger @click="openDeleteModal(record.id)">删除</a-button>
           </div>
         </template>
       </template>

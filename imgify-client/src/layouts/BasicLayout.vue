@@ -34,6 +34,7 @@ import GlobalHeader from '../components/GlobalHeader.vue'
   background: linear-gradient(to right, #fefefe, #fff);
   margin-bottom: 28px;
   padding: 20px;
+  position: relative;
 }
 #basicLayout .header {
   padding-inline: 20px;

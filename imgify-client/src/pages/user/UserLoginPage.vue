@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import { userLoginUsingPost } from '@/api/user';
-import { useLoginUserStore } from '@/stores/useLoginUserStore';
-import { message } from 'ant-design-vue';
+import { userLoginUsingPost } from '@/api/yonghumokuai'
+import { useLoginUserStore } from '@/stores/useLoginUserStore'
+import { message } from 'ant-design-vue'
 import { reactive } from 'vue'
-import { useRouter } from 'vue-router';
-import '@/assets/font/font.css';
+import { useRouter } from 'vue-router'
+import '@/assets/font/font.css'
+import SvgCloudBackgound from '@/components/svg/SvgCloudBackgound.vue'
 
 const router = useRouter()
 const loginUserStore = useLoginUserStore()
@@ -19,24 +20,35 @@ const formState = reactive<API.UserLoginRequest>({
  * @parm values
  */
 const handleSumbit = async (values: { userAccount: string; userPassword: string }) => {
-    const res = await userLoginUsingPost(values)
-    // 登录成功，把登录态保存到全局状态中
-    if (res.data.code === 0 && res.data.data) {
-        await loginUserStore.fetchLoginUser()
-        message.success('登录成功')
-        router.push({
-            path: '/',
-            replace: true,
-        })
-    } else {
-        message.error('登录失败，' + res.data.message)
-    }
+  const res = await userLoginUsingPost(values)
+  // 登录成功，把登录态保存到全局状态中
+  if (res.data.code === 0 && res.data.data) {
+    await loginUserStore.fetchLoginUser()
+    message.success('登录成功')
+    router.push({
+      path: '/',
+      replace: true,
+    })
+  } else {
+    message.error('登录失败，' + res.data.message)
+  }
 }
+
+// 处理返回
+const handleReturn = () => {
+  router.push(
+    '/'
+  )
+}
+
 </script>
 
 <template>
+  <SvgCloudBackgound />
   <div id="userLoginPage">
-    <h2 class="title"><span>Img<span>ify</span></span> 云图库 - 用户登录</h2>
+    <h2 class="title">
+      <span>Img<span>ify</span></span> 云图库 - 用户登录
+    </h2>
     <div class="desc">企业级智能协同云图库</div>
     <a-form :model="formState" name="basic" autocomplete="off" @finish="handleSumbit">
       <a-form-item name="userAccount" :rules="[{ required: true, message: '请输入账号' }]">
@@ -57,6 +69,7 @@ const handleSumbit = async (values: { userAccount: string; userPassword: string 
       </div>
       <a-form-item>
         <a-button type="primary" html-type="submit" style="width: 100%">登录</a-button>
+        <div class="desc" style="cursor: pointer;margin-top: 0.5em;" @click="handleReturn">返回首页</div>
       </a-form-item>
     </a-form>
   </div>
@@ -65,17 +78,19 @@ const handleSumbit = async (values: { userAccount: string; userPassword: string 
 <style scoped>
 #userLoginPage {
   max-width: 360px;
-  margin: 0 auto;
+  margin: 60px auto;
 }
 
 .title {
+  font-size: 1.45rem;
   text-align: center;
   margin-bottom: 16px;
 }
 
 .title span {
+  font-size: 1.85rem;
   font-weight: 900;
-  font-family: "Geist";
+  font-family: 'Geist';
 }
 
 .title span span {

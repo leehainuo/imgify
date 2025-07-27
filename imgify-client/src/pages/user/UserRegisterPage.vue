@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { userRegisterUsingPost } from '@/api/user'
+import { userRegisterUsingPost } from '@/api/yonghumokuai'
 import { message } from 'ant-design-vue'
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import '@/assets/font/font.css'
+import SvgCloudBackgound from '@/components/svg/SvgCloudBackgound.vue'
 
 const router = useRouter()
 
@@ -39,9 +40,15 @@ const handleSumbit = async (values: {
     message.error('注册失败，' + res.data.message)
   }
 }
+
+// 处理返回
+const handleReturn = () => {
+  router.push('/')
+}
 </script>
 
 <template>
+  <SvgCloudBackgound />
   <div id="userRegisterPage">
     <h2 class="title">
       <span>Img<span>ify</span></span> 云图库 - 用户登录
@@ -81,6 +88,7 @@ const handleSumbit = async (values: {
       </div>
       <a-form-item>
         <a-button type="primary" html-type="submit" style="width: 100%">注册</a-button>
+        <div class="desc" style="cursor: pointer;margin-top: 0.5em;" @click="handleReturn">返回首页</div>
       </a-form-item>
     </a-form>
   </div>
@@ -89,15 +97,17 @@ const handleSumbit = async (values: {
 <style scoped>
 #userRegisterPage {
   max-width: 360px;
-  margin: 0 auto;
+  margin: 60px auto;
 }
 
 .title {
+  font-size: 1.45rem;
   text-align: center;
   margin-bottom: 16px;
 }
 
 .title span {
+  font-size: 1.85rem;
   font-weight: 900;
   font-family: 'Geist';
 }
