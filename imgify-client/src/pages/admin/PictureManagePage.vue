@@ -4,7 +4,11 @@ import {
   listPictureByPageUsingPost,
   reviewPictureUsingPost,
 } from '@/api/tupianmokuai'
-import { PIC_REVIEW_STATUS_MAP, PIC_REVIEW_STATUS_ENUM, PIC_REVIEW_STATUS_OPTIONS } from '@/constants/picture'
+import {
+  PIC_REVIEW_STATUS_MAP,
+  PIC_REVIEW_STATUS_ENUM,
+  PIC_REVIEW_STATUS_OPTIONS,
+} from '@/constants/picture'
 import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
 import { computed, onMounted, reactive, ref } from 'vue'
@@ -163,7 +167,12 @@ const handleReview = async (record: API.Picture, reviewStatus: number) => {
   <div id="pictureManagePage">
     <a-flex style="margin-bottom: 1em" justify="space-between">
       <h2>图片管理</h2>
-      <a-button type="primary" href="/addPicture" target="_blank">+ 创建图片</a-button>
+      <a-space>
+        <a-button type="primary" href="/addPicture" target="_blank">+ 创建图片</a-button>
+        <a-button type="primary" href="/addPicture/batch" target="_blank" ghost
+          >+ 批量创建图片</a-button
+        >
+      </a-space>
     </a-flex>
 
     <!-- 搜索表单 -->
