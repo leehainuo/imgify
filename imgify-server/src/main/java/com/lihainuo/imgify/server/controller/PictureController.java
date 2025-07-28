@@ -6,14 +6,12 @@ import com.lihainuo.imgify.server.annotation.AuthCheck;
 import com.lihainuo.imgify.server.common.BaseResponse;
 import com.lihainuo.imgify.server.common.DeleteRequest;
 import com.lihainuo.imgify.server.common.ResultUtils;
+import com.lihainuo.imgify.server.enums.PictureReviewStatusEnum;
 import com.lihainuo.imgify.server.exception.BusinessException;
 import com.lihainuo.imgify.server.exception.ErrorCode;
 import com.lihainuo.imgify.server.exception.ThrowUtils;
 import com.lihainuo.imgify.server.model.constant.UserConstant;
-import com.lihainuo.imgify.server.model.dto.picture.PictureEditRequest;
-import com.lihainuo.imgify.server.model.dto.picture.PictureQueryRequest;
-import com.lihainuo.imgify.server.model.dto.picture.PictureUpdateRequest;
-import com.lihainuo.imgify.server.model.dto.picture.PictureUploadRequest;
+import com.lihainuo.imgify.server.model.dto.picture.*;
 import com.lihainuo.imgify.server.model.entity.Picture;
 import com.lihainuo.imgify.server.model.entity.User;
 import com.lihainuo.imgify.server.model.vo.PictureTagCategory;
@@ -47,7 +45,7 @@ public class PictureController {
 
     @ApiOperation(value = "上传图片")
     @PostMapping("/upload")
-    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    // @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
     public BaseResponse<PictureVO> uploadPicture(
             @RequestPart("file") MultipartFile multipartFile,
             PictureUploadRequest pictureUploadRequest,
@@ -57,6 +55,18 @@ public class PictureController {
         PictureVO pictureVO = pictureService.uploadPicture(multipartFile, pictureUploadRequest, loginUser);
         return ResultUtils.success(pictureVO);
     }
+
+    @ApiOperation(value = "上传图片通过 URL")
+    @PostMapping("/upload/url")
+    public BaseResponse<PictureVO> uploadPictureByUrl(
+            @RequestBody PictureUploadRequest pictureUploadRequest,
+            HttpServletRequest request) {
+        User loginUser = userService.getLoginUser(request);
+        String fileUrl = pictureUploadRequest.getFileUrl();
+        PictureVO pictureVO = pictureService.uploadPicture(fileUrl, pictureUploadRequest, loginUser);
+        return ResultUtils.success(pictureVO);
+    }
+
 
     @ApiOperation(value = "删除图片")
     @PostMapping("/delete")
@@ -94,6 +104,9 @@ public class PictureController {
         long id = pictureUpdateRequest.getId();
         Picture oldPicture = pictureService.getById(id);
         ThrowUtils.throwIf(oldPicture == null, ErrorCode.NOT_FOUND_ERROR);
+        // 补充审核参数
+        User loginUser = userService.getLoginUser(request);
+        pictureService.fillReviewParam(picture, loginUser);
         // 更新操作
         boolean result = pictureService.updateById(picture);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
@@ -139,6 +152,7 @@ public class PictureController {
         long size = pictureQueryRequest.getPageSize();
         // 限制爬虫
         ThrowUtils.throwIf(size > 20, ErrorCode.PARAMS_ERROR);
+        pictureQueryRequest.setReviewStatus(PictureReviewStatusEnum.PASS.getValue());
         Page<Picture> picturePage = pictureService.page(new Page<>(current, size),
                 pictureService.getQueryWrapper(pictureQueryRequest));
         Page<PictureVO> pictureVOPage = pictureService.getPictureVOPage(picturePage, request);
@@ -167,6 +181,9 @@ public class PictureController {
         if (!oldPicture.getUserId().equals(loginUser.getId()) && !userService.isAdmin(loginUser)) {
             throw new BusinessException(ErrorCode.NO_AUTH_ERROR);
         }
+        // 补充审核参数
+        pictureService.fillReviewParam(picture, loginUser);
+        // 编辑操作
         boolean result = pictureService.updateById(picture);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR);
         return ResultUtils.success(true);
@@ -181,5 +198,15 @@ public class PictureController {
         pictureTagCategory.setTagList(tagList);
         pictureTagCategory.setCategoryList(categoryList);
         return ResultUtils.success(pictureTagCategory);
+    }
+
+    @ApiOperation(value = "审核图片")
+    @PostMapping("/review")
+    @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
+    public BaseResponse<Boolean> reviewPicture(@RequestBody PictureReviewRequest pictureReviewRequest, HttpServletRequest request) {
+        ThrowUtils.throwIf(pictureReviewRequest == null || pictureReviewRequest.getId() <= 0, ErrorCode.PARAMS_ERROR);
+        User loginUser = userService.getLoginUser(request);
+        pictureService.doPictureReview(pictureReviewRequest, loginUser);
+        return ResultUtils.success(true);
     }
 }

@@ -3,6 +3,7 @@ package com.lihainuo.imgify.server.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lihainuo.imgify.server.model.dto.picture.PictureQueryRequest;
+import com.lihainuo.imgify.server.model.dto.picture.PictureReviewRequest;
 import com.lihainuo.imgify.server.model.dto.picture.PictureUploadRequest;
 import com.lihainuo.imgify.server.model.entity.Picture;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -22,13 +23,13 @@ public interface PictureService extends IService<Picture> {
 
     /**
      * 上传图片
-     * @param file - 图片文件
+     * @param inputSource - 输入源
      * @param pictureUploadRequest - 上传图片请求
      * @param loginUser - 登录用户
      * @return 封装后的图片数据
      */
     PictureVO uploadPicture(
-            MultipartFile file,
+            Object inputSource,
             PictureUploadRequest pictureUploadRequest,
             User loginUser
     );
@@ -60,4 +61,18 @@ public interface PictureService extends IService<Picture> {
      * @param picture - 图片数据
      */
     void validPicture(Picture picture);
+
+    /**
+     * 图片数据审核
+     * @param pictureReviewRequest - 图片数据审核请求
+     * @param loginUser - 登录用户
+     */
+    void doPictureReview(PictureReviewRequest pictureReviewRequest, User loginUser);
+
+    /**
+     * 填充图片数据审核参数
+     * @param picture - 图片数据
+     * @param loginUser - 登录用户
+     */
+    void fillReviewParam(Picture picture, User loginUser);
 }
