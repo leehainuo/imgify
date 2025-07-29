@@ -50,5 +50,5 @@ export async function testUploadFileUsingPost(
     data: formData,
     requestType: 'form',
     ...(options || {}),
-  } as any)
+  })
 }

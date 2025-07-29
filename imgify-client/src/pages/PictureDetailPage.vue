@@ -56,7 +56,7 @@ const canEdit = computed(() => {
 
 // 编辑
 const handlerEdit = () => {
-  router.push('/add_picture?id=' + picture.value.id)
+  router.push('/addPicture?id=' + picture.value.id)
 }
 // 删除
 const handlerDelete = async () => {

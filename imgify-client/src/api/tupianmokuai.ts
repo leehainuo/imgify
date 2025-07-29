@@ -92,6 +92,21 @@ export async function listPictureVoByPageUsingPost(
   })
 }
 
+/** 分页获取封装的图片列表缓存 POST /api/picture/list/page/vo/cache */
+export async function listPictureVoByPageCacheUsingPost(
+  body: API.PictureQueryRequest,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponsePagePictureVO_>('/api/picture/list/page/vo/cache', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  })
+}
+
 /** 审核图片 POST /api/picture/review */
 export async function reviewPictureUsingPost(
   body: API.PictureReviewRequest,
@@ -168,7 +183,7 @@ export async function uploadPictureUsingPost(
     data: formData,
     requestType: 'form',
     ...(options || {}),
-  } as any)
+  })
 }
 
 /** 批量抓取图片 POST /api/picture/upload/batch */

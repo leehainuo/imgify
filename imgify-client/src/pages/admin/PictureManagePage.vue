@@ -137,6 +137,7 @@ const handleDelete = async () => {
   const res = await deletePictureUsingPost({ id })
   if (res.data.code === 0) {
     message.success('删除成功')
+    deleteModalVisible.value = false
     // 刷新数据
     fetchData()
   } else {
@@ -272,7 +273,7 @@ const handleReview = async (record: API.Picture, reviewStatus: number) => {
             >
               拒绝
             </a-button>
-            <a-button type="link" :href="`/add_picture?id=${record.id}`" target="_blank"
+            <a-button type="link" :href="`/addPicture?id=${record.id}`" target="_blank"
               >编辑</a-button
             >
             <a-button type="link" danger @click="openDeleteModal(record.id)">删除</a-button>

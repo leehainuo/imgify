@@ -21,10 +21,11 @@
             <result property="editTime" column="editTime" />
             <result property="updateTime" column="updateTime" />
             <result property="isDelete" column="isDelete" />
+            <result property="thumbnailUrl" column="thumbnailUrl" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,url,name,introduction,category,tags,
+        id,url,thumbnailUrl,name,introduction,category,tags,
         picSize,picWidth,picHeight,picScale,picFormat,
         userId,createTime,editTime,updateTime,isDelete
     </sql>

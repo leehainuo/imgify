@@ -10,6 +10,7 @@ import com.lihainuo.imgify.server.enums.PictureReviewStatusEnum;
 import com.lihainuo.imgify.server.exception.BusinessException;
 import com.lihainuo.imgify.server.exception.ErrorCode;
 import com.lihainuo.imgify.server.exception.ThrowUtils;
+import com.lihainuo.imgify.server.manager.CosManager;
 import com.lihainuo.imgify.server.manager.FileManager;
 import com.lihainuo.imgify.server.manager.upload.FilePictureUpload;
 import com.lihainuo.imgify.server.manager.upload.PictureUploadTemplate;
@@ -29,6 +30,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -45,18 +47,18 @@ import java.util.stream.Collectors;
 @Service
 public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture> implements PictureService{
 
-    private final FileManager fileManager;
     private final UserService userService;
 
     private final FilePictureUpload filePictureUpload;
     private final UrlPictureUpload urlPictureUpload;
+    private final CosManager cosManager;
 
 
-    public PictureServiceImpl(FileManager fileManager, UserService userService, @Qualifier("filePictureUpload") PictureUploadTemplate pictureUploadTemplate, FilePictureUpload filePictureUpload, UrlPictureUpload urlPictureUpload) {
-        this.fileManager = fileManager;
+    public PictureServiceImpl(FileManager fileManager, UserService userService, @Qualifier("filePictureUpload") PictureUploadTemplate pictureUploadTemplate, FilePictureUpload filePictureUpload, UrlPictureUpload urlPictureUpload, CosManager cosManager) {
         this.userService = userService;
         this.filePictureUpload = filePictureUpload;
         this.urlPictureUpload = urlPictureUpload;
+        this.cosManager = cosManager;
     }
 
     /**
@@ -98,6 +100,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture> impl
         // 构造要入库的图片信息
         Picture picture = new Picture();
         picture.setUrl(pictureUploadResult.getUrl());
+        picture.setThumbnailUrl(pictureUploadResult.getThumbnailUrl());
         String picName = pictureUploadResult.getPicName();
         if (pictureUploadRequest != null && StrUtil.isNotBlank(pictureUploadRequest.getPicName())) {
             picName = pictureUploadRequest.getPicName();
@@ -117,7 +120,7 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture> impl
             picture.setId(pictureId);
             picture.setEditTime(new Date());
         }
-
+        log.info("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥{}",pictureUploadResult.getUrl());
         boolean result = this.saveOrUpdate(picture);
         ThrowUtils.throwIf(!result, ErrorCode.OPERATION_ERROR, "图片上传失败");
         return PictureVO.objToVo(picture);
@@ -364,6 +367,45 @@ public class PictureServiceImpl extends ServiceImpl<PictureMapper, Picture> impl
             }
         }
         return uploadCount;
+    }
+
+    @Async
+    @Override
+    public void clearPictureFile(Picture oldPicture) {
+        // 判断图片是否被多条记录使用
+        String pictureUrl = oldPicture.getUrl();
+        long count = this.lambdaQuery()
+                .eq(Picture::getUrl, pictureUrl)
+                .count();
+        // 有不止一条记录用到了，不清理
+        if (count > 1) {
+            return;
+        }
+        // FIXME 注意，这里的 URL 包含了域名、实际上只要传 key 值（存储路径）就够了
+        // log.info("🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥{}", oldPicture.getUrl());
+        String key = extractKeyFromUrl(oldPicture.getUrl());
+        // log.info("🗝️🗝️🗝️🗝️🗝️🗝️🗝️🗝️🗝️🗝️🗝️{}", key);
+        cosManager.deleteObject(key);
+        // 清理缩略图
+        String thumbnailUrl = oldPicture.getThumbnailUrl();
+        if (StrUtil.isNotBlank(thumbnailUrl)) {
+            String thumbnailKey = extractKeyFromUrl(thumbnailUrl);
+            cosManager.deleteObject(thumbnailKey);
+        }
+    }
+
+    private String extractKeyFromUrl(String url) {
+        if (StrUtil.isBlank(url)) {
+            return null;
+        }
+        // 移除 URL 中的协议部分（http:// 或 https://）
+        String withoutProtocol = url.replaceFirst("^(http|https)://", "");
+        // 以第一个 '/' 为分隔，取后面的部分作为 key 值
+        int firstSlashIndex = withoutProtocol.indexOf('/');
+        if (firstSlashIndex > -1) {
+            return withoutProtocol.substring(firstSlashIndex + 1);
+        }
+        return null;
     }
 
 }

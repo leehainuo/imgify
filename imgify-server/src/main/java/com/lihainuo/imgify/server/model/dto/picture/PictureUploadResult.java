@@ -4,7 +4,12 @@ import lombok.Data;
 
 @Data
 public class PictureUploadResult {
-  
+
+    /**
+     * 缩略图地址
+     */
+    private String thumbnailUrl;
+
     /**  
      * 图片地址  
      */  

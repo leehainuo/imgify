@@ -3,11 +3,24 @@ server:
   port: 8080
   servlet:
     context-path: /api
+    session:
+        cookie:
+          max-age: 2592000 # session 30 天过期
 spring:
   application:
     name: imgify-server
   profiles:
     active: local
+  # session 配置
+  session:
+    store-type: redis
+    timeout: 2592000 # session 30 天过期
+  # Redis 配置
+  redis:
+    host: 127.0.0.1
+    port: 6379
+    timeout: 5000
+    database: 0
   # 数据库配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

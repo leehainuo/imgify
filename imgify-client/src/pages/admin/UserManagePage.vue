@@ -131,6 +131,7 @@ const handleDelete = async () => {
   const res = await deleteUserUsingPost({ id })
   if (res.data.code === 0) {
     message.success('删除成功')
+    deleteModalVisible.value = false
     // 刷新数据
     fetchData()
   } else {

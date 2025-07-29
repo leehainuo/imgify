@@ -30,7 +30,10 @@ const handleClickPicture = (picture: API.PictureVO) => {
         <!-- 单张图片 -->
         <a-card hoverable @click="handleClickPicture(picture)">
           <template #cover>
-            <img style="height: 180px; object-fit: cover" :alt="picture.name" :src="picture.url" />
+            <img
+             style="height: 180px; object-fit: cover" 
+             :alt="picture.name" 
+             :src="picture.thumbnailUrl ?? picture.url " /> <!-- 控制是否要优先显示缩略图 -->
           </template>
           <a-card-meta :title="picture.name">
             <template #description>
